@@ -14,9 +14,14 @@ public class Main {
 
         directory.readFiles();
 
-        long linearSearchTime = linearSearch();
+        long linearSearchTime = stage1();
         System.out.println();
-        bubbleSort(linearSearchTime * 10);
+
+        stage2(linearSearchTime * 10);
+        System.out.println();
+
+        directory.readFiles();
+        stage3();
     }
 
     private static String formatTime(long time) {
@@ -24,7 +29,7 @@ public class Main {
                 time / 60_000, (time % 60_000) / 1_000, (time % 60_000) % 1_000);
     }
 
-    private static long linearSearch() {
+    private static long stage1() {
         System.out.println("Start searching (linear search)...");
         long timeStart = System.currentTimeMillis();
         int found = directory.linearSearch();
@@ -35,7 +40,7 @@ public class Main {
         return timeEnd - timeStart;
     }
 
-    private static void bubbleSort(long limit) {
+    private static void stage2(long limit) {
         System.out.println("Start searching (bubble sort + jump search)...");
         var timeStart = System.currentTimeMillis();
         boolean result = directory.bubbleSort(limit);
@@ -51,6 +56,27 @@ public class Main {
                 found, directory.getFindFileLength(), formatTime(sortTime + searchTime));
         System.out.printf("Sorting time: %s%s%n", formatTime(sortTime),
                 result ? "" : " - STOPPED, moved to linear search");
+        System.out.printf("Searching time: %s%n", formatTime(searchTime));
+    }
+
+    private static void stage3() {
+        System.out.println("Start searching (quick sort + binary search)...");
+
+        // run quick sort
+        var timeStart = System.currentTimeMillis();
+        directory.doQuickSort();
+        var timeEnd = System.currentTimeMillis();
+        var sortTime = timeEnd - timeStart;
+
+        // run binary search
+        timeStart = System.currentTimeMillis();
+        var found = directory.doBinarySearch();
+        timeEnd = System.currentTimeMillis();
+        var searchTime = timeEnd - timeStart;
+
+        System.out.printf("Found %d / %d entries. Time taken: %s%n",
+                found, directory.getFindFileLength(), formatTime(sortTime + searchTime));
+        System.out.printf("Sorting time: %s%n", formatTime(sortTime));
         System.out.printf("Searching time: %s%n", formatTime(searchTime));
     }
 }
